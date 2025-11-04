@@ -4,6 +4,7 @@ namespace gastronomiya.Models.Interfaces;
 
 public interface IReceitaService
 {
+    Task<List<Receita>> GetAll();
     Task <Receita?> GetById(int id);
     Task<List<Receita>> GetByName(string name);
     Task<Receita> Add(Receita receita);

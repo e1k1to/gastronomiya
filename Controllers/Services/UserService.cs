@@ -20,22 +20,7 @@ public class UserService : IUserService
 
     public async Task<User> Add(User user)
     {
-        var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == user.Username);
-        if (existingUser != null)
-        {
-            throw new ArgumentException("Nome de usuário já está em uso");
-        }
-
-        if (string.IsNullOrEmpty(user.Password))
-        {
-            throw new ArgumentException("Senha não pode ser vazia.");
-        }
-        
-        if(user.Password.Length < 8)
-        {
-            throw new ArgumentException("Senha deve ter mais 8 ou mais caracteres.");
-        }
-
+        ValidateUser(user);
         var salt = CreateSalt();
 
         var _user = new User
@@ -53,12 +38,12 @@ public class UserService : IUserService
     {
         var user = await GetById(id);
 
-        if(user == null)
+        if (user == null)
         {
             throw new ArgumentException("Usuário não existe.");
         }
         _context.Users.Remove(user);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
     public async Task<User?> GetById(int id)
@@ -79,10 +64,24 @@ public class UserService : IUserService
             throw new ArgumentException("Usuário não encontrado.");
         }
 
-        var userWithSameName = await _context.Users.FirstOrDefaultAsync(u => u.Username == user.Username);
-        if(userWithSameName != null && userWithSameName.Id != userExistente.Id)
+        ValidateUser(user);
+
+        userExistente.Username = user.Username;
+        userExistente.Password = HashPassword(user.Password, userExistente.Salt);
+        await _context.SaveChangesAsync();
+        return userExistente;
+    }
+    private void ValidateUser(User user)
+    {
+        var userWithSameName = _context.Users.FirstOrDefault(u => u.Username == user.Username);
+        if (userWithSameName != null && userWithSameName.Id != user.Id)
         {
             throw new ArgumentException("Nome de usuário já em uso.");
+        }
+
+        if (string.IsNullOrEmpty(user.Username))
+        {
+            throw new ArgumentException("Nome de usuário não pode ser vazio");
         }
 
         if (string.IsNullOrEmpty(user.Password))
@@ -94,11 +93,6 @@ public class UserService : IUserService
         {
             throw new ArgumentException("Senha deve ter mais 8 ou mais caracteres.");
         }
-
-        userExistente.Username = user.Username;
-        userExistente.Password = HashPassword(user.Password, userExistente.Salt);
-        await _context.SaveChangesAsync();
-        return userExistente;
     }
 
     private string CreateSalt(int size = 32)

@@ -1,0 +1,10 @@
+﻿@{
+    ViewData["Title"] = "Receitas";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Receitas</h1>
+    @foreach(var receita in ViewBag.TodasReceitas) {
+        <p><strong> @receita.Titulo: </strong> <a>Clique aqui para acessar.</a></p>
+    }
+</div>
