@@ -1,0 +1,13 @@
+﻿@{
+    var tituloReceita = ViewBag.Receita.Titulo;
+    var ingredientesReceita = ViewBag.Receita.Ingredientes;
+    var modoDePreparo = ViewBag.Receita.ModoDePreparo;
+
+    ViewData["Title"] = tituloReceita;
+}
+
+<div class="text-center">
+    <h1 class="display-4">@tituloReceita</h1>
+    <h3>@ingredientesReceita</h3>
+    <h4>@modoDePreparo</h4>
+</div>

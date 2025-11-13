@@ -18,6 +18,7 @@ builder.Services.AddDbContext<AppDBContext>(options =>
 builder.Services.AddScoped<IReceitaService, ReceitaService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
@@ -29,7 +30,12 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+} else 
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
 
 app.UseHttpsRedirection();
 app.UseRouting();
