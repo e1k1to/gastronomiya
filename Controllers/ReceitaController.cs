@@ -1,3 +1,4 @@
+using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 using gastronomiya.Models;
 using gastronomiya.Models.DTOs;
@@ -56,5 +57,38 @@ namespace gastronomiya.Controllers
             return RedirectToAction("GetReceitaById", new { id = _receita.Id });
         }
 
+        [HttpGet("PutReceita/{id}")]
+        public async Task<ActionResult> PutReceita(int id)
+        {
+            var receitaAtual = await _receitas.GetById(id);
+            if(receitaAtual == null)
+            {
+                return BadRequest("Receita não existe...");
+            }
+
+            ReceitaDTO receitaDTO = new ReceitaDTO {Id = receitaAtual.Id, Titulo = receitaAtual.Titulo, Ingredientes = receitaAtual.Ingredientes, ModoDePreparo = receitaAtual.ModoDePreparo };
+
+            return View(receitaDTO);
+        }
+
+        [HttpPost("PutReceita/{id}")]
+        public async Task<ActionResult> PutReceita(int id, [FromForm] ReceitaDTO receitaDTO)
+        {
+            if(receitaDTO == null)
+            {
+                return BadRequest("Receita não existe...");
+            }
+
+            Receita receita = new Receita
+            {
+                Id = receitaDTO.Id,
+                Titulo = receitaDTO.Titulo,
+                Ingredientes = receitaDTO.Ingredientes,
+                ModoDePreparo = receitaDTO.ModoDePreparo
+            };
+
+            var _receita = await _receitas.Update(receita);
+            return RedirectToAction("GetReceitaById", new { id = _receita.Id });
+        }
     }
 }

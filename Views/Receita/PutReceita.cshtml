@@ -1,0 +1,26 @@
+﻿@model gastronomiya.Models.DTOs.ReceitaDTO
+@{
+    ViewData["Title"] = "Alterar Receita";
+}
+
+<h1>Adicionar nova receita: </h1>
+
+<form method="post" asp-action="PutReceita" asp-controller="Receita" asp-route-id="@Model.Id">
+    <div class="form-group">
+        <input type="number" class="form-control" id="Id" asp-for="Id" required value="@Model.Id" type="hidden" />
+    </div>
+    <div class="form-group">
+        <label for="Titulo">Titulo da receita:</label>
+        <input type="text" class="form-control" id="Titulo" asp-for="Titulo" required value="@Model.Titulo"/>
+    </div>
+    <div class="form-group">
+        <label for="Ingredientes">Ingredientes da receita:</label>
+        <input type="text" class="form-control" id="Ingredientes" asp-for="Ingredientes" required value="@Model.Ingredientes" />
+    </div>
+    <div class="form-group">
+        <label for="ModoDePreparo">Modo de preparo: </label>
+        <textarea class="form-control" id="ModoDePreparo" asp-for="ModoDePreparo" required value="@Model.ModoDePreparo"></textarea>
+    </div>
+    <input type="submit" class="btn mt-3 btn-primary" value="Atualizar Receita" />
+</form>
+
