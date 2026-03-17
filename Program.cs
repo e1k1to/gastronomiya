@@ -1,7 +1,18 @@
-using gastronomiya.Controllers.Services;
-using gastronomiya.Models.Context;
-using gastronomiya.Models.Interfaces;
+using gastronomiya.Application;
+using gastronomiya.Application.Auth;
+using gastronomiya.Application.Receitas;
+using gastronomiya.Application.Receitas.Interfaces;
+using gastronomiya.Application.Users;
+using gastronomiya.Application.Users.Interfaces;
+using gastronomiya.Domain.Entities;
+using gastronomiya.Infrastructure.Context;
+using gastronomiya.Infrastructure.Interfaces;
+using gastronomiya.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,16 +21,57 @@ builder.Services.AddControllersWithViews();
 
 var connectionString = builder.Configuration.GetConnectionString("mysql");
 
+builder.Services.Configure<JwtSettings>(
+    builder.Configuration.GetSection("JwtSettings")
+);
+
+builder.Services.AddSingleton(resolver =>
+    resolver.GetRequiredService<IOptions<JwtSettings>>().Value
+);
+
+var jwtSettings = builder.Services.BuildServiceProvider().GetRequiredService<JwtSettings>();
+
 builder.Services.AddDbContext<AppDBContext>(options =>
 {
     options.UseMySql(connectionString: connectionString, serverVersion: ServerVersion.AutoDetect(connectionString));
 });
 
-builder.Services.AddScoped<IReceitaService, ReceitaService>();
+var key = Encoding.ASCII.GetBytes(jwtSettings.SecretKey);
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IReceitaRepository, ReceitaRepository>();
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IReceitaService, ReceitaService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = true,
+        ValidIssuer = jwtSettings.Issuer,
+        ValidateAudience = true,
+        ValidAudience = jwtSettings.Audience,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -36,10 +88,12 @@ if (!app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+//app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
