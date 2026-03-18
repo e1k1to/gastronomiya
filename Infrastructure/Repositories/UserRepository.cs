@@ -99,7 +99,7 @@ public class UserRepository : IUserRepository
         using (var sha256 = SHA256.Create())
         {
             byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
-            byte[] saltBytes = Convert.FromBase64String(salt);
+            byte[] saltBytes = Encoding.UTF8.GetBytes(salt);
 
             byte[] saltedPassword = new byte[passwordBytes.Length + saltBytes.Length];
             Buffer.BlockCopy(passwordBytes, 0, saltedPassword, 0, passwordBytes.Length);

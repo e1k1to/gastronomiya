@@ -1,10 +1,12 @@
 using gastronomiya.Application.Receitas.Interfaces;
 using gastronomiya.Application.Users.Interfaces;
 using gastronomiya.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace gastronomiya.API.Controllers
 {
+    [Authorize]
     [Route("[controller]")]
     [ApiController]
     public class UserController : Controller

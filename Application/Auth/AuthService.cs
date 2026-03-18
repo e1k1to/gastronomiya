@@ -20,11 +20,15 @@ namespace gastronomiya.Application.Auth
             _auth = auth;
         }
 
-        public async Task<String> Login(string nome, string password)
+        public async Task<String> Login(UserAccessDto creds)
         {
-            var hashedPassword = HashPassword(password, nome);
+            if (creds == null || creds.Username == null || creds.Password == null)
+            {
+                return String.Empty;
+            }
+            var hashedPassword = HashPassword(creds.Password, creds.Username);
 
-            var user = await _auth.Login(nome, hashedPassword);
+            var user = await _auth.Login(creds.Username, hashedPassword);
             if (user == null)
             {
                 return String.Empty;
@@ -64,7 +68,7 @@ namespace gastronomiya.Application.Auth
             using (var sha256 = SHA256.Create())
             {
                 byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
-                byte[] saltBytes = Convert.FromBase64String(salt);
+                byte[] saltBytes = Encoding.UTF8.GetBytes(salt);
 
                 byte[] saltedPassword = new byte[passwordBytes.Length + saltBytes.Length];
                 Buffer.BlockCopy(passwordBytes, 0, saltedPassword, 0, passwordBytes.Length);

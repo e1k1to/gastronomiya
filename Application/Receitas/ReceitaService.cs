@@ -1,6 +1,7 @@
 using System;
 using System.Security.Cryptography;
 using System.Text;
+using gastronomiya.Application.Receitas.DTOs;
 using gastronomiya.Application.Receitas.Interfaces;
 using gastronomiya.Domain.Entities;
 using gastronomiya.Infrastructure.Context;

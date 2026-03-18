@@ -3,7 +3,7 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Receitas</h1>
+    <h1 class="display-4">Receitas <a style="text-decoration:none" href="/receita/adicionar">+</a></h1>
     @foreach(var receita in ViewBag.TodasReceitas) {
         <p><strong> @receita.Titulo: </strong> <a href="/Receita/@receita.Id">Clique aqui para acessar.</a></p>
     }

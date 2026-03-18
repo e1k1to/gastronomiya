@@ -1,4 +1,5 @@
 ﻿@{
+    var idReceita = (int)ViewBag.ReceitaId;
     var tituloReceita = ViewBag.Receita.Titulo;
     var ingredientesReceita = ViewBag.Receita.Ingredientes;
     var modoDePreparo = ViewBag.Receita.ModoDePreparo;
@@ -7,7 +8,7 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">@tituloReceita</h1>
+    <h1 class="display-4">@tituloReceita <a style="text-decoration:none" href="/receita/editar/@idReceita">#</a></h1>
     <h3>@ingredientesReceita</h3>
     <h4>@modoDePreparo</h4>
 </div>

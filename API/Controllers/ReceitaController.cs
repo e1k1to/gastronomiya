@@ -1,9 +1,10 @@
-using System.Diagnostics.Contracts;
-using System.Threading.Tasks;
 using gastronomiya.Application.Receitas.DTOs;
 using gastronomiya.Application.Receitas.Interfaces;
 using gastronomiya.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.Contracts;
+using System.Threading.Tasks;
 
 namespace gastronomiya.API.Controllers
 {
@@ -30,15 +31,18 @@ namespace gastronomiya.API.Controllers
         public async Task<ActionResult> GetReceitaById(int id)
         {
             ViewBag.Receita = await _receitas.GetById(id);
+            ViewBag.ReceitaId = id;
             return View();
         }
 
-        [HttpGet("Listar")]
+        [Authorize]
+        [HttpGet("Adicionar")]
         public async Task<ActionResult> AddReceita()
         {
             return View(new ReceitaDTO());
         }
 
+        [Authorize]
         [HttpPost("Adicionar")]
         public async Task<ActionResult> AddReceita([FromForm] ReceitaDTO receitaDTO)
         {
@@ -57,8 +61,20 @@ namespace gastronomiya.API.Controllers
             return RedirectToAction("GetReceitaById", new { id = _receita.Id });
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult> PutReceita(int id, [FromForm] ReceitaDTO receitaDTO)
+        [Authorize]
+        [HttpGet("Editar/{id}")]
+        public async Task<ActionResult> EditarReceita([FromRoute] int id)
+        {
+            var receita = await _receitas.GetById(id);
+            var receitaDto = new ReceitaDTO() { Ingredientes = receita.Ingredientes, ModoDePreparo = receita.ModoDePreparo, Titulo = receita.Titulo };
+            ViewBag.ReceitaId = id;
+            return View(receitaDto);
+        }
+
+        [Authorize]
+        //Razor não consegue usar PUT o,...,o
+        [HttpPost("Editar/{id}")]
+        public async Task<ActionResult> EditarReceita(int id, [FromForm] ReceitaDTO receitaDTO)
         {
             if(receitaDTO == null)
             {

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Mvc;
 
-namespace gastronomiya.Domain.Entities;
+namespace gastronomiya.Application.Receitas.DTOs;
 
 public class ReceitaAccessDto
 {

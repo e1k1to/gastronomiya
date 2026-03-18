@@ -8,6 +8,6 @@ namespace gastronomiya.Application.Auth
 {
     public interface IAuthService
     {
-        public Task<String> Login(string nome, string password);
+        public Task<String> Login(UserAccessDto creds);
     }
 }

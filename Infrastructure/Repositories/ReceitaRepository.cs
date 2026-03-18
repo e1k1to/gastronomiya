@@ -6,6 +6,7 @@ using gastronomiya.Application.Receitas.Interfaces;
 using gastronomiya.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using gastronomiya.Infrastructure.Interfaces;
+using gastronomiya.Application.Receitas.DTOs;
 
 namespace gastronomiya.Infrastructure.Repositories;
 
@@ -21,7 +22,7 @@ public class ReceitaRepository : IReceitaRepository
 
     public async Task<Receita> Add(ReceitaAccessDto receita)
     {
-        ValidateReceita(receita);
+        ValidateReceita(receita, false);
 
         var _receita = new Receita
         {
@@ -71,7 +72,7 @@ public class ReceitaRepository : IReceitaRepository
             throw new ArgumentException("Receita não encontrada.");
         }
 
-        ValidateReceita(receita);
+        ValidateReceita(receita, true);
 
         receitaExistente.Titulo = receita.Titulo;
         receitaExistente.Ingredientes = receita.Ingredientes;
@@ -81,10 +82,10 @@ public class ReceitaRepository : IReceitaRepository
         return receitaExistente;
     }
     
-    private void ValidateReceita(ReceitaAccessDto receita)
+    private void ValidateReceita(ReceitaAccessDto receita, bool isEditar)
     {
         var receitaWithSameTitle =  _context.Receitas.FirstOrDefault(u => u.Titulo == receita.Titulo);
-        if (receitaWithSameTitle != null)
+        if (receitaWithSameTitle != null && !isEditar)
         {
             throw new ArgumentException("Titulo já em uso.");
         }
