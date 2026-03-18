@@ -33,13 +33,13 @@ namespace gastronomiya.API.Controllers
             return View();
         }
 
-        [HttpGet("listar")]
+        [HttpGet("Listar")]
         public async Task<ActionResult> AddReceita()
         {
             return View(new ReceitaDTO());
         }
 
-        [HttpPost("adicionar")]
+        [HttpPost("Adicionar")]
         public async Task<ActionResult> AddReceita([FromForm] ReceitaDTO receitaDTO)
         {
             if (receitaDTO == null)
